@@ -8,6 +8,8 @@ from triangle import *
 from facet import * 
 
 class STLFile():
+    """
+    """
 	
     def __init__(self, filename, numberOfFacets):
         """
