@@ -75,9 +75,6 @@ class Facet():
 if __name__ == "__main__":
     facet = Facet()
     facet.setNormal(-1, 0, 0)
-    vertex 0 0 10
-    vertex 0 10 10
-    vertex 0 0 0
     facet.setNextTrianglePoint(0, 0, 10)
     facet.setNextTrianglePoint(0, 10, 10)
     facet.setNextTrianglePoint(0, 0, 0)
