@@ -1,5 +1,9 @@
 #!/usr/bin/python
 
+import os
+import sys
+import string
+
 class Gcode():
     """
     """
@@ -7,31 +11,62 @@ class Gcode():
     def __init__(self):
         """
         """
+        self.redirectToFile = 0
+        self.filename = None
+        self.redirectfilehandle = None
 
+    def GcodeRedirectFileName(self, filename):
+        """
+        """
+        self.filename = filename
+        
+    def GcodeRedirectStart(self):
+        """
+        """
+        self.redirectToFile = 1
+        if self.redirectfilehandle is None and self.filename is not None:
+            self.redirectfilehandle = open(self.filename, 'r')
+        
+    def GcodeRedirectStop(self):
+        """
+        """
+        self.redirectToFile = 0
+        if self.redirectfilehandle is not None:
+            self.redirectfilehandle.close()
+            self.redirectfilehandle = None
+            self.filename = None
+            
+    def Gcode_Print(self, gCodeString):
+        """
+        """
+        print"%s" % (gCodeString)
+        if self.redirectToFile == 1 and self.redirectfilehandle is not None:
+            self.redirectfilehandle.write(gCodeString)
+        
     def Gcode_Absolute(self):
         """
         """
-        print"G90              ; Switch to absolute movement"
+        self.Gcode_Print("G90            ; Switch to absolute movement")
 
     def Gcode_Millimenters(self):
         """
         """
-        print"G21              ; Units to Millimenters"        
+        self.Gcode_Print("G21            ; Units to Millimenters")        
 
     def Gcode_Home(self):
         """
         """
-        print"G28              ; Move to the home position"        
+        self.Gcode_Print("G28            ; Move to the home position")        
 
     def Gcode_Relative(self):
         """
         """
-        print"G91            ; Switch to relative movement"        
+        self.Gcode_Print("G91            ; Switch to relative movement")
 
     def Gcode_DisableMotors(self):
         """
         """
-        print"M84            ; disable motors"
+        self.Gcode_Print("M84            ; disable motors")
         
 
     def Gcode_ExtruderTemp(self, temp):
@@ -47,22 +82,24 @@ class Gcode():
     def Gcode_BedTemp(self, temp):
         """
         """
-        print("M140 S%d        ; Set Bed Temperature" % (temp))
+        str ="M140 S%d        ; Set Bed Temperature" % (temp)
+        self.Gcode_Print(str)
 
     def Gcode_FanOff(self):
         """
         """
-        print"M107              ; Fan Off"
+        self.Gcode_Print("M107           ; Fan Off")
         
     def Gcode_Wait(self):
         """
         """
-        print"M116             ; Wait for both temperatures to be met"
+        self.Gcode_Print("M116           ; Wait for both temperatures to be met")
         
     def Gcode_WaitTemperatureBed(self, temp):
         """
         """
-        print("M190 S%d          ; Wait for both temperatures to be met" % (temp))
+        str ="M190 S%d          ; Wait for both temperatures to be met" % (temp)
+        self.Gcode_Print(str)
         
     def Gcode_SetPosition(self, x=None, y=None, z=None, e=None):
         """
@@ -76,7 +113,7 @@ class Gcode():
             str += "Z%f " % (z)
         if e is not None:
             str += "E%f " % (e)
-        print str
+        self.Gcode_Print(str)
         
     def Gcode_ControlMove(self, x=None, y=None, z=None, e=None, f=None):
         """
@@ -92,12 +129,12 @@ class Gcode():
             str += "E%f " % (e)
         if f is not None:
             str += "F%f " % (f)
-        print str
+        self.Gcode_Print(str)
         
     def Gcode_ (self):
         """
         """
-        print""
+        self.Gcode_Print("")
         
     def start_code(self):
         """
@@ -133,9 +170,14 @@ class Gcode():
     def outputGcode(self):
         """
         """
+        self.GcodeRedirectFileName('/home/ljones/stl Files/python/openscad.scad')
+        self.GcodeRedirectStart()
         self.start_code()
-        self.printLayer()
+        self.Gcode_Print(";---------------------------------------------------")
+	self.printLayer()
+        self.Gcode_Print(";---------------------------------------------------")
         self.end_code()
+        self.GcodeRedirectStop()
         
     def printLayer(self):
         """
