@@ -1,45 +1,59 @@
 #!/usr/bin/python
 
 import os
-import sys
+import sys, getopt
 import string
+import argparse
 
 class Gcode():
     """
     """
 	
-    def __init__(self):
+    def __init__(self, argv):
         """
         """
         self.redirectToFile = 0
-        self.filename = None
         self.redirectfilehandle = None
-
-    def GcodeRedirectFileName(self, filename):
-        """
-        """
-        self.filename = filename
+        self.inputfile = None
+        self.outputfile = None
         
+#        try:
+#            opts, args = getopt.getopt(argv,"hi:o:",["ifile=","ofile="])
+#        except getopt.GetoptError:
+#            print 'gcode.py -i <inputfile> -o <outputfile>'
+#            sys.exit(2)
+        
+#        for opt, arg in opts:
+#            if opt == '-h':
+#                print 'gcode.py -i <inputfile> -o <outputfile>'
+#                sys.exit()
+#            elif opt in ("-i", "--ifile"):
+#                self.inputfile = arg
+#            elif opt in ("-o", "--ofile"):
+#                self.outputfile = arg
+
     def GcodeRedirectStart(self):
         """
         """
         self.redirectToFile = 1
-        if self.redirectfilehandle is None and self.filename is not None:
-            self.redirectfilehandle = open(self.filename, 'r')
+        if self.redirectfilehandle is None and self.outputfile is not None:
+            print 'Opening file: %s' % (self.outputfile)
+            self.redirectfilehandle = open(self.outputfile, 'w')
         
     def GcodeRedirectStop(self):
         """
         """
         self.redirectToFile = 0
         if self.redirectfilehandle is not None:
+            print 'Closing file: %s' % (self.outputfile)
             self.redirectfilehandle.close()
             self.redirectfilehandle = None
-            self.filename = None
             
     def Gcode_Print(self, gCodeString):
         """
         """
         print"%s" % (gCodeString)
+        str = gCodeString + '\n'
         if self.redirectToFile == 1 and self.redirectfilehandle is not None:
             self.redirectfilehandle.write(gCodeString)
         
@@ -170,8 +184,7 @@ class Gcode():
     def outputGcode(self):
         """
         """
-        self.GcodeRedirectFileName('/home/ljones/stl Files/python/openscad.scad')
-        self.GcodeRedirectStart()
+	self.GcodeRedirectStart()
         self.start_code()
         self.Gcode_Print(";---------------------------------------------------")
 	self.printLayer()
@@ -186,6 +199,42 @@ class Gcode():
         self.Gcode_ControlMove(x=43.87, y=56.57, z=None, e=None, f=None)
 
 if __name__ == "__main__":
-    gcode = Gcode()
-    gcode.outputGcode()
+
+    parser = argparse.ArgumentParser( description='Process some files.', 
+                                      epilog="And that's how you'd process them files")
+#    parser.add_argument('integers', metavar='N', type=int, nargs='+', help='an integer for the accumulator')
+#    parser.add_argument('--sum', dest='accumulate', action='store_const', const=sum, default=max, help='sum the integers (default: find the max)')
+#    args = parser.parse_args()
+#    print args.accumulate(args.integers)
+
+    parser.add_argument('-i','--input', help='Input file name',  required=True)
+    parser.add_argument('-o','--output',help='Output file name', required=True)
+    
+    parser.add_argument('-a', action="store_true", default=False     )
+    parser.add_argument('-b', action="store",      dest="b"          )
+    parser.add_argument('-c', action="store",      dest="c", type=int)
+    
+    parser.add_argument('--noarg',    action="store_true", default=False            )
+    parser.add_argument('--witharg',  action="store",      dest="witharg"           )
+    parser.add_argument('--witharg2', action="store",      dest="witharg2", type=int)
+   
+    args = parser.parse_args()
+    ## show values ##
+#    print ("Input file: %s" % args.input )
+#    print ("Output file: %s" % args.output )
+
+#    print parser.parse_args(['-i', 'Lloyd', '-o', 'Jones', '-a', '-bval', '-c', '3'])
+#    print parser.parse_args(sys.argv[1:])
+
+    print 'a       =', args.a
+    print 'b       =', args.b
+    print 'c       =', args.c
+    print 'input   =', args.input
+    print 'output  =', args.output
+    print 'noarg   =', args.noarg
+    print 'witharg =', args.witharg
+    print 'witharg2=', args.witharg2
+
+#    gcode = Gcode(sys.argv[1:])
+#    gcode.outputGcode()
 

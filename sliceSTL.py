@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 import os
-import sys
+import sys, getopt
 import string
 from vertex import * 
 from triangle import * 
@@ -22,6 +22,25 @@ class STLFile():
         self.filename = filename
         self.numberOfFacets = numberOfFacets
         
+        self.inputfile = ''
+        self.outputfile = ''
+        
+        try:
+            opts, args = getopt.getopt(argv,"hi:o:",["ifile=","ofile="])
+        except getopt.GetoptError:
+            print 'gcode.py -i <inputfile> -o <outputfile>'
+            sys.exit(2)
+        
+        for opt, arg in opts:
+            if opt == '-h':
+                print 'gcode.py -i <inputfile> -o <outputfile>'
+                sys.exit()
+            elif opt in ("-i", "--ifile"):
+                self.inputfile = arg
+            elif opt in ("-o", "--ofile"):
+                self.outputfile = arg
+
+
     def processFirstLine(self, line):
         """
         """
@@ -114,7 +133,6 @@ class STLFile():
         print'--------------------------------------'
   
 if __name__ == "__main__":
-    if len(sys.argv) > 1:
-        myfile = STLFile(sys.argv[1], sys.argv[2]); 
+        myfile = STLFile(sys.argv[1:]); 
         myfile.main()
 

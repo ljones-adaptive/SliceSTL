@@ -24,6 +24,16 @@ class Facet():
         """
         self.normal.printPoint()
         self.triangle.printVertices()
+        
+    def CalculateLowestPoint(self):
+        """
+        """
+        if len(self.triangle) is not 3:
+    	    print"Incorrect number of triangle points"
+        else:
+            print"correct number of triangle points available"
+        self.triangle.checkForHorizontal()
+        
 
     def openScadFacetPrint(self, f):
         """
@@ -75,8 +85,11 @@ class Facet():
 if __name__ == "__main__":
     facet = Facet()
     facet.setNormal(-1, 0, 0)
+    
     facet.setNextTrianglePoint(0, 0, 10)
     facet.setNextTrianglePoint(0, 10, 10)
     facet.setNextTrianglePoint(0, 0, 0)
     
+    facet.printFacet()
+    facet.CalculateLowestPoint()
 
